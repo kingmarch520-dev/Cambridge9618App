@@ -28,22 +28,22 @@ jobs:
         pip install --upgrade pip
         pip install buildozer cython
 
-    - name: Auto-Accept Android SDK Licenses
+    - name: Automatically Accept Android Licenses
       run: |
+        # Force system to accept standard licenses
         mkdir -p ~/.android
         touch ~/.android/repositories.cfg
-        # Dynamically download the sdkmanager and auto-accept terms
-        yes | pip install --upgrade android-sdk-updater || true
-        # Tell buildozer explicitly to accept licenses globally
-        export BUILDOZER_ALLOW_ORG_APK_DOMAIN=1
+        yes | sdkmanager --licenses || true
 
     - name: Compile Standalone Android APK
       run: |
-        # Using the special accept-licenses flag natively supported by buildozer
         yes | buildozer android debug
+      env:
+        BUILDOZER_ALLOW_ORG_APK_DOMAIN: 1
 
     - name: Upload Finished APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Cambridge-9618-App
         path: bin/*.apk
+        
